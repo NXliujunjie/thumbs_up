@@ -33,9 +33,9 @@ class _AnimatePageState extends State<AnimatePage>
 
     for (AnimationController c in animationControllerList) {
       print("object");
-       c.dispose();
+      c.dispose();
     }
-   
+
     list.clear();
 
     animationControllerList.clear();
@@ -48,46 +48,76 @@ class _AnimatePageState extends State<AnimatePage>
       appBar: AppBar(
         title: Text("点赞动画"),
       ),
-      body: StreamBuilder(
-        stream: widgetListStreamController.stream,
-        initialData: <Widget>[],
-        builder: (BuildContext context, AsyncSnapshot<List<Widget>> snapshot) {
-          if (snapshot.data != null) {
-            return Container(
-              color: Colors.yellow,
-              width: 150,
-              height: 300,
-              child: Stack(
-                children: snapshot.data.map((f) => f).toList(),
+      body: Center(
+        child: Column(
+          children: <Widget>[
+            SizedBox(height: 100,),
+            StreamBuilder(
+              stream: widgetListStreamController.stream,
+              initialData: <Widget>[],
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<Widget>> snapshot) {
+                if (snapshot.data != null) {
+                  return Container(
+                    color: Colors.yellow,
+                    width: 150,
+                    height: 300,
+                    child: Stack(
+                      children: snapshot.data.map((f) => f).toList(),
+                    ),
+                  );
+                } else {
+                  return Text("");
+                }
+              },
+            ),
+            InkWell(
+              onTap: () {
+                AnimationController controller = new AnimationController(
+                    duration: const Duration(milliseconds: 4000), vsync: this);
+                Animation<double> animationXY =
+                    new Tween(begin: 300.0, end: 0.0).animate(controller);
+                animationXY.addStatusListener((status) {
+                  setState(() {});
+                });
+                controller.forward();
+                list.add(AnimatedLogo(
+                  animation: animationXY,
+                  type: Random().nextInt(3),
+                ));
+                animationControllerList.add(controller);
+                widgetListStreamController.sink.add(list);
+              },
+              child: Container(
+                margin: EdgeInsets.only(right: 14),
+                child: Icon(Icons.thumb_up),
               ),
-            );
-          } else {
-            return Text("");
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Container(
-          width: 60,
-          height: 60,
+            ),
+          ],
         ),
-        onPressed: () {
-          AnimationController controller = new AnimationController(
-              duration: const Duration(milliseconds: 4000), vsync: this);
-          Animation<double> animationXY =
-              new Tween(begin: 300.0, end: 0.0).animate(controller);
-          animationXY.addStatusListener((status) {
-            setState(() {});
-          });
-          controller.forward();
-          list.add(AnimatedLogo(
-            animation: animationXY,
-            type: Random().nextInt(3),
-          ));
-          animationControllerList.add(controller);
-          widgetListStreamController.sink.add(list);
-        },
       ),
+      // floatingActionButton: FloatingActionButton(
+      //   child: Container(
+      //     width: 60,
+      //     height: 60,
+      //   ),
+      //   onPressed: () {
+      //     AnimationController controller = new AnimationController(
+      //         duration: const Duration(milliseconds: 4000), vsync: this);
+      //     Animation<double> animationXY =
+      //         new Tween(begin: 300.0, end: 0.0).animate(controller);
+      //     animationXY.addStatusListener((status) {
+      //       setState(() {});
+      //     });
+      //     controller.forward();
+      //     list.add(AnimatedLogo(
+      //       animation: animationXY,
+      //       type: Random().nextInt(3),
+      //     ));
+      //     animationControllerList.add(controller);
+      //     widgetListStreamController.sink.add(list);
+      //   },
+      // ),
     );
   }
 }
